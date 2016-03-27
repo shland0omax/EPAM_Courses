@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace CycleQueue
@@ -13,7 +12,11 @@ namespace CycleQueue
         private int arraySize;
         private int headIndex, taleIndex;
         private int queueLength;
+        private bool IsSynced = false;
 
+        /// <summary>
+        /// Length of queue
+        /// </summary>
         public int QueueLength
         {
             get { return queueLength; }
@@ -69,7 +72,7 @@ namespace CycleQueue
                 do
                 {
                     temp[index] = array[headIndex];
-                    headIndex = NextIndex(headIndex);
+                    NextIndex(ref headIndex);
                     index++;
                 } while (headIndex != taleIndex);
                 headIndex = 0;
@@ -79,7 +82,8 @@ namespace CycleQueue
             }
             queueLength++;
             array[taleIndex] = input;
-            taleIndex = NextIndex(taleIndex);
+            NextIndex(ref taleIndex);
+            IsSynced = false;
         }
 
         /// <summary>
@@ -91,8 +95,9 @@ namespace CycleQueue
             if (queueLength == 0)
                 throw new Exception("Queue is empty");
             T res = array[headIndex];
-            headIndex = NextIndex(headIndex);
+            NextIndex(ref headIndex);
             queueLength--;
+            IsSynced = false;
             return res;
         }
 
@@ -107,27 +112,20 @@ namespace CycleQueue
             throw new Exception("Queue is empty");
         }
 
-
-        //Если я правильно понял, подобая реализация Contains используется во встроенном классе Queue<T>
-        //public bool Contains(T item)
-        //{
-        //    IEqualityComparer comparer = EqualityComparer<T>.Default;
-        //    foreach (T elem in this)
-        //    {
-        //        if (comparer.Equals(item, elem))
-        //            return true;
-        //    }
-        //    return false;
-        //}
-
         /// <summary>
-        /// Looks if such member is in the queue
+        /// Looks if equal item is in queue
         /// </summary>
-        /// <param name="t">member to find</param>
-        /// <returns>True - if such member is found, no otherwise</returns>
-        public bool Contains(T t)
+        /// <param name="item">object to be compared</param>
+        /// <returns>true, if equal item found, false otherwise</returns>
+        public bool Contains(T item)
         {
-            return array.Contains(t);
+            IEqualityComparer comparer = EqualityComparer<T>.Default;
+            foreach (T elem in this)
+            {
+                if (comparer.Equals(item, elem))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -136,6 +134,7 @@ namespace CycleQueue
         public void Clear()
         {
             headIndex = taleIndex = queueLength = 0;
+            IsSynced = false;
         }
 
         /// <summary>
@@ -145,7 +144,7 @@ namespace CycleQueue
         public T[] ToArray()
         {
             T[] outArray = new T[queueLength];
-            for(int i = 0, x = headIndex; i < queueLength; i++, x = NextIndex(x))
+            for(int i = 0, x = headIndex; i < queueLength; i++, NextIndex(ref x))
             {
                 outArray[i] = array[x];
             }
@@ -160,7 +159,7 @@ namespace CycleQueue
             do
             {
                 sb.AppendLine(array[i].ToString());
-                i = NextIndex(i);
+                NextIndex(ref i);
             } while (i != taleIndex);
             return sb.ToString();
         }
@@ -171,7 +170,13 @@ namespace CycleQueue
         /// <returns>queue's enumerator</returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return new Enumerator(ToArray());
+            IsSynced = true;
+            for(int i = 0, j = headIndex; i < queueLength; ++i, NextIndex(ref j))
+            {
+                if (!IsSynced) throw new InvalidOperationException("Trying enumerate changed version!");
+                yield return array[j];
+            }
+            yield break;
         }
 
         /// <summary>
@@ -184,73 +189,15 @@ namespace CycleQueue
         }
         #endregion
 
-        #region Enumerator
-        /// <summary>
-        /// Enumerator for circular queue
-        /// Warning! This enumerator realisation copies queue's array,
-        /// so its version could not be equal with origin queue
-        /// </summary>
-        public class Enumerator : IEnumerator<T>
-        {
-            private T[] array;
-            private int position = -1;
-
-            public Enumerator(T[] list) 
-            {
-                if (list == null)
-                    throw new ArgumentNullException(nameof(list) + " is null");
-                array = list;
-            }
-
-            public T Current
-            {
-                get
-                {
-                    try
-                    {
-                        return array[position];
-                    }
-                    catch (IndexOutOfRangeException)
-                    {
-                        throw new InvalidOperationException();
-                    }
-                }
-            }
-
-            object IEnumerator.Current
-            {
-                get
-                {
-                    return Current;
-                }
-            }
-
-            public void Dispose()
-            {
-            }
-
-            public bool MoveNext()
-            {
-                position++;
-                return (position < array.Length);
-            }
-
-            public void Reset()
-            {
-                position = -1;
-            }
-        }
-        #endregion
-
         #region Private Methods
         /// <summary>
         /// Helps to get next index in circular array
         /// </summary>
         /// <param name="currentIndex">current index</param>
         /// <returns>next index</returns>
-        private int NextIndex(int currentIndex)
+        private void NextIndex(ref int currentIndex)
         {
-            return (currentIndex + 1 == arraySize) ? 0 : currentIndex + 1;
+            currentIndex = (currentIndex + 1 == arraySize) ? 0 : currentIndex + 1;
         }
         #endregion
     }
