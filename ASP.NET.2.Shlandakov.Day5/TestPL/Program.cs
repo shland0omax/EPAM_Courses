@@ -9,6 +9,7 @@ namespace TestPL
         {
             var a = new Polynomial(1, 1);
             var b = new Polynomial(-1, 1);
+            var z = new Polynomial(a);
             Console.WriteLine((a*b).ToString());
             var c = new Polynomial(1, -5, 3, 2);
             var d = c;
@@ -20,8 +21,9 @@ namespace TestPL
             Console.WriteLine(c == d);
             Console.WriteLine(c.Equals(e));
             Console.WriteLine(c == e);
-            Console.WriteLine(f*e*a);
+            Console.WriteLine(f*e*a*2);
             Console.WriteLine(f[2]);
+            Console.WriteLine(e.Degree);
         }
     }
 }

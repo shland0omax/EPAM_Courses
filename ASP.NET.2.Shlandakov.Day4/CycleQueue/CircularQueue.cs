@@ -1,26 +1,29 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CycleQueue
 {
-    public class CircularQueue<T> : IEnumerable<T>
+    /// <summary>
+    /// Represents cycle queue
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class CircularQueue<T> : IEnumerable<T> where T: IEquatable<T>
     {
         #region Fields and Properties
         private T[] array;
         private int arraySize;
         private int headIndex, taleIndex;
         private int queueLength;
-        private bool IsSynced = false;
+        private bool isSynced;
 
         /// <summary>
         /// Length of queue
         /// </summary>
-        public int QueueLength
-        {
-            get { return queueLength; }
-        }
+        public int QueueLength => queueLength;
+
         #endregion
 
         #region Constructors
@@ -29,24 +32,36 @@ namespace CycleQueue
         /// </summary>
         public CircularQueue()
         {
-            arraySize = 16;
-            array = new T[arraySize];
-            headIndex = taleIndex = queueLength = 0;
+            Initialize();
         }
 
         /// <summary>
         /// Constructor with initial array input
         /// </summary>
         /// <param name="initArray">initial array</param>
-        public CircularQueue(params T[] initArray): this()
+        public CircularQueue(params T[] initArray): this((IEnumerable<T>)initArray)
         {
-            if (initArray == null)
-                throw new ArgumentNullException(nameof(initArray) + " is null");
-            foreach (var str in initArray)
-            {
-                Enqueue(str);
-            }
         }
+
+        /// <summary>
+        /// Constructor for Enumerable parameters
+        /// </summary>
+        /// <param name="initEnumerable">input Enumerable</param>
+        public CircularQueue(IEnumerable<T> initEnumerable)
+        {
+            if (initEnumerable == null) throw new ArgumentNullException(nameof(initEnumerable) + " is null");
+            arraySize = 16;
+            IEnumerable<T> list = initEnumerable as List<T> ?? initEnumerable.ToList();
+            int length = list.Count();
+            while (arraySize < length) arraySize *= 2;
+
+            Initialize(arraySize);
+
+            foreach (var elem in list)
+            {
+                Enqueue(elem);
+            }
+        } 
         #endregion
 
         #region Public Methods
@@ -83,7 +98,7 @@ namespace CycleQueue
             queueLength++;
             array[taleIndex] = input;
             NextIndex(ref taleIndex);
-            IsSynced = false;
+            isSynced = false;
         }
 
         /// <summary>
@@ -97,7 +112,7 @@ namespace CycleQueue
             T res = array[headIndex];
             NextIndex(ref headIndex);
             queueLength--;
-            IsSynced = false;
+            isSynced = false;
             return res;
         }
 
@@ -119,13 +134,9 @@ namespace CycleQueue
         /// <returns>true, if equal item found, false otherwise</returns>
         public bool Contains(T item)
         {
-            IEqualityComparer comparer = EqualityComparer<T>.Default;
-            foreach (T elem in this)
-            {
-                if (comparer.Equals(item, elem))
-                    return true;
-            }
-            return false;
+            if (item == null)
+                return this.Any(elem => (object)elem == null);
+            return this.Any(elem => elem.Equals(item));
         }
 
         /// <summary>
@@ -134,21 +145,7 @@ namespace CycleQueue
         public void Clear()
         {
             headIndex = taleIndex = queueLength = 0;
-            IsSynced = false;
-        }
-
-        /// <summary>
-        /// Returns this queue as an array
-        /// </summary>
-        /// <returns>Array of queue members</returns>
-        public T[] ToArray()
-        {
-            T[] outArray = new T[queueLength];
-            for(int i = 0, x = headIndex; i < queueLength; i++, NextIndex(ref x))
-            {
-                outArray[i] = array[x];
-            }
-            return outArray;
+            isSynced = false;
         }
 
         public override string ToString()
@@ -170,13 +167,12 @@ namespace CycleQueue
         /// <returns>queue's enumerator</returns>
         public IEnumerator<T> GetEnumerator()
         {
-            IsSynced = true;
+            isSynced = true;
             for(int i = 0, j = headIndex; i < queueLength; ++i, NextIndex(ref j))
             {
-                if (!IsSynced) throw new InvalidOperationException("Trying enumerate changed version!");
+                if (!isSynced) throw new InvalidOperationException("Trying enumerate changed version!");
                 yield return array[j];
             }
-            yield break;
         }
 
         /// <summary>
@@ -198,6 +194,13 @@ namespace CycleQueue
         private void NextIndex(ref int currentIndex)
         {
             currentIndex = (currentIndex + 1 == arraySize) ? 0 : currentIndex + 1;
+        }
+
+        private void Initialize(int initLength = 16)
+        {
+            arraySize = initLength;
+            array = new T[arraySize];
+            headIndex = taleIndex = queueLength = 0;
         }
         #endregion
     }

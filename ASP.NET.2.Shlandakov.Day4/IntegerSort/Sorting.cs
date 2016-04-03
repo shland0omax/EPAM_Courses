@@ -74,7 +74,7 @@ namespace IntegerSort
         /// Sorting part of mergesort
         /// </summary>
         /// <param name="array">array to sort</param>
-        /// <param name="comparer"compare delegate</param>
+        /// <param name="comparer">compare delegate</param>
         /// <param name="l">left bound</param>
         /// <param name="m">median</param>
         /// <param name="r">right bound</param>

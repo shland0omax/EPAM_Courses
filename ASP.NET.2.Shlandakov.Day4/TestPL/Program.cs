@@ -17,6 +17,7 @@ namespace TestPL
             {
                 Console.WriteLine(a);
             }
+            int a2 = intQueue.QueueLength;
         }
     }
 }

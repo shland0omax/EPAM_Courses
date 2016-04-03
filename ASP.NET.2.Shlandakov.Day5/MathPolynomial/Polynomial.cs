@@ -1,29 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
 namespace MathPolynomial
 {
     /// <summary>
-    /// Class that represents a polynomial
+    /// Represents math polynomial
     /// </summary>
     public class Polynomial : IEquatable<Polynomial>
     {
         #region Field and Property
-        private Dictionary<int, double> coefficients;
+
+        private readonly double[] elements;
 
         /// <summary>
-        /// Max non-zero degree of polynomial
+        /// Returns max exponent of non-zero elements (returns zero if all coeffs are 0)
         /// </summary>
         public int Degree
         {
             get
             {
-                int deg = coefficients.Count - 1;
+                int deg = elements.Length - 1;
                 while (deg > 0)
                 {
-                    if (coefficients[deg] != 0)
+                    if (elements[deg] != 0)
                         return deg;
                     deg--;
                 }
@@ -33,162 +34,229 @@ namespace MathPolynomial
         #endregion
 
         #region Constructors
-        public Polynomial() : this(0) { }
+        /// <summary>
+        /// Creates polynomial with coeffs from other polynomial
+        /// </summary>
+        /// <param name="polynomial">other polynomial</param>
+        public Polynomial(Polynomial polynomial) : this(polynomial.elements)
+        {
+        }
 
+        /// <summary>
+        /// Creates polynomial with specified coefficients (by ascending of exponent)
+        /// </summary>
+        /// <param name="coefs">coefficients</param>
         public Polynomial(params double[] coefs)
         {
             if (coefs == null)
-                throw new ArgumentNullException(nameof(coefs) + " array is null!");
-            coefficients = new Dictionary<int, double>();
-            if (coefs.Length == 0)
-                coefficients.Add(0, 0);
+                throw new ArgumentNullException(nameof(coefs));
+            if (coefs.Contains(double.NaN) || coefs.Contains(double.NegativeInfinity) || coefs.Contains(double.PositiveInfinity))
+                throw new ArgumentException(nameof(coefs) + " contains invalid value");
+            int deg = 4;
+            if (deg < coefs.Length) deg = coefs.Length;
+            elements = new double[deg];
+            if (coefs.Length == 0) return;
             int i = 0;
-            foreach(double c in coefs)
+            foreach (double c in coefs)
             {
-                this[i] = c;
+                elements[i] = c;
                 ++i;
             }
-        }
-
-        public Polynomial(Polynomial polynomial)
-        {
-            coefficients = new Dictionary<int, double>(polynomial.coefficients);
         }
         #endregion
 
         #region Indexator
+        /// <summary>
+        /// Returns coefficient for specified exponent (>= 0)
+        /// </summary>
+        /// <param name="index">exponent parameter</param>
+        /// <returns>coefficient for specified exponent</returns>
         public double this[int index]
         {
             get
             {
                 if (index < 0)
                     throw new IndexOutOfRangeException("Index should be non-negative number");
-                if (coefficients.ContainsKey(index))
-                    return coefficients[index];
+                if (elements.Length > index)
+                    return elements[index];
                 return 0;
-            }
-            set
-            {
-                if (double.IsNaN(value) || double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value))
-                    throw new ArgumentException("Incorrect coefficient found");
-                if (index < 0)
-                    throw new IndexOutOfRangeException("Index should be non-negative number");
-                if (coefficients.ContainsKey(index))
-                    coefficients[index] = value;
-                else
-                {
-                    for (int i = coefficients.Count; i < index; ++i)
-                    {
-                        coefficients.Add(i, 0);
-                    }
-                    coefficients.Add(index, value);
-                }
             }
         }
         #endregion
 
-        #region Arithmetic operators overload
-        public static Polynomial operator +(Polynomial poly1, Polynomial poly2)
+        #region Arithmetic operation public methods
+        /// <summary>
+        /// Addition operation overload
+        /// </summary>
+        /// <param name="lp">left param</param>
+        /// <param name="rp">right param</param>
+        /// <returns>Sum polinomial</returns>
+        public static Polynomial operator +(Polynomial lp, Polynomial rp)
         {
-            if (poly1 == null || poly2 == null)
+            return Add(lp, rp);
+        }
+
+        /// <summary>
+        /// Substraction operation overload
+        /// </summary>
+        /// <param name="lp">left param</param>
+        /// <param name="rp">right param</param>
+        /// <returns>Difference polinomial</returns>
+        public static Polynomial operator -(Polynomial lp, Polynomial rp)
+        {
+            return lp + (-rp);
+        }
+
+        /// <summary>
+        /// Negate operation overload
+        /// </summary>
+        /// <param name="p">polynomial to be negated</param>
+        /// <returns>Negated polinomial</returns>
+        public static Polynomial operator -(Polynomial p)
+        {
+            return Negate(p);
+        }
+
+        /// <summary>
+        /// Multipliction operation overload
+        /// </summary>
+        /// <param name="lp">left param</param>
+        /// <param name="rp">right param</param>
+        /// <returns>Product polinomial</returns>
+        public static Polynomial operator *(Polynomial lp, Polynomial rp)
+        {
+            return Multiply(lp, rp);
+        }
+
+        /// <summary>
+        /// Sums two polynomial parameters
+        /// </summary>
+        /// <param name="lp">left param</param>
+        /// <param name="rp">right param</param>
+        /// <returns>Sum of polynomial</returns>
+        public static Polynomial Add(Polynomial lp, Polynomial rp)
+        {
+            if (lp == null || rp == null)
                 throw new ArgumentNullException("Null argument found");
-            int length = Math.Max(poly1.Degree, poly2.Degree);
-            Polynomial res = new Polynomial();
+            int length = Math.Max(lp.Degree, rp.Degree);
+            double[] resArray = new double[length + 1];
             for (int i = 0; i <= length; ++i)
             {
-                res[i] = poly1[i] + poly2[i];
+                resArray[i] = lp[i] + rp[i];
             }
+            Polynomial res = new Polynomial(resArray);
             return res;
         }
 
-        public static Polynomial operator -(Polynomial polyMin, Polynomial polySub)
+        /// <summary>
+        /// Returns polinomial multipied by -1
+        /// </summary>
+        /// <param name="p">Input polinomial</param>
+        /// <returns>Polinomial multipied by -1</returns>
+        public static Polynomial Negate(Polynomial p)
         {
-            return polyMin + (-polySub);
-        }
-        
-        public static Polynomial operator -(Polynomial poly)
-        {
-            if (poly == null)
-                throw new ArgumentNullException("Null argument found");
-            Polynomial res = new Polynomial();
-            int length = poly.Degree;
+            if (p == null)
+                throw new ArgumentNullException(nameof(p));
+            int length = p.Degree;
+            double[] resArray = new double[length + 1];
             for (int i = 0; i <= length; ++i)
             {
-                res[i] = -poly[i];
+                resArray[i] = -p[i];
             }
+            Polynomial res = new Polynomial(resArray);
             return res;
         }
 
-        public static Polynomial operator *(Polynomial poly1, Polynomial poly2)
+        /// <summary>
+        /// Multiplies two polynomial parameters
+        /// </summary>
+        /// <param name="lp">left param</param>
+        /// <param name="rp">right param</param>
+        /// <returns>Composition of polynomial</returns>
+        public static Polynomial Multiply(Polynomial lp, Polynomial rp)
         {
-            if (poly1 == null || poly2 == null)
+            if (lp == null || rp == null)
                 throw new ArgumentNullException("Null argument found");
-            Polynomial res = new Polynomial();
-            int len1 = poly1.Degree;
-            int len2 = poly2.Degree;
-            for(int i = 0; i <= len1; ++i)
-                for(int j = 0; j <= len2; ++j)
-                    res[i + j] += poly1[i] * poly2[j];
+            int len1 = lp.Degree;
+            int len2 = rp.Degree;
+            double[] resArray = new double[len1 + len2 +1];
+            for (int i = 0; i <= len1; ++i)
+                for (int j = 0; j <= len2; ++j)
+                    resArray[i + j] += lp[i] * rp[j];
+            Polynomial res = new Polynomial(resArray);
             return res;
-        }
-
-        public static Polynomial operator *(Polynomial poly, double multiplier)
-        {
-            return multiplier*poly;
-        }
-
-        public static Polynomial operator *(double multiplier, Polynomial poly)
-        {
-            if (poly == null)
-                throw new ArgumentNullException("Null argument found");
-            if (double.IsNaN(multiplier) || double.IsNegativeInfinity(multiplier) || double.IsPositiveInfinity(multiplier))
-                throw new ArgumentException("Incorrect coefficient found");
-            int len = poly.Degree;
-            var res = new Polynomial(poly);
-            for(int i = 0; i <= len; ++i)
-            {
-                res[i] *= multiplier;
-            }
-            return res; 
         }
         #endregion
 
         #region Equality methods
-        public static bool Equals(Polynomial poly1, Polynomial poly2)
+
+        /// <summary>
+        /// Static Equals method
+        /// </summary>
+        /// <param name="lp">left param</param>
+        /// <param name="rp">right param</param>
+        /// <returns>true - if equal, false otherwise</returns>
+        public static bool Equals(Polynomial lp, Polynomial rp)
         {
-            return ((poly1 == poly2) || ((poly1 != null) && (poly2 != null))) && poly1.Equals(poly2);
+            return ((lp == rp) || ((lp != null) && (rp != null))) && lp.Equals(rp);
         }
 
+        /// <summary>
+        /// Instance Equals method
+        /// </summary>
+        /// <param name="other">param</param>
+        /// <returns>true - if equal, false otherwise</returns>
         public bool Equals(Polynomial other)
         {
-            if (other == null) return false;
-            int len = Math.Max(Degree, other.Degree);
+            if (Degree != other?.Degree) return false;
+            int len = Degree;
             for (int i = 0; i <= len; i++)
                 if (this[i] != other[i])
                     return false;
             return true;
         }
-            
+
+        /// <summary>
+        /// Object Equals override method
+        /// </summary>
+        /// <param name="other">param</param>
+        /// <returns>true - if equal, false otherwise</returns>
         public override bool Equals(object other)
         {
             if (!(other is Polynomial)) return false;
             return Equals((Polynomial)other);
         }
 
+        /// <summary>
+        /// Tells if variables refer the same object
+        /// </summary>
+        /// <param name="poly1"></param>
+        /// <param name="poly2"></param>
+        /// <returns></returns>
         public static bool operator ==(Polynomial poly1, Polynomial poly2)
         {
             if (ReferenceEquals(poly1, poly2)) return true;
             return false;
         }
 
+        /// <summary>
+        /// Tells if variables refer different objects
+        /// </summary>
+        /// <param name="poly1"></param>
+        /// <param name="poly2"></param>
+        /// <returns></returns>
         public static bool operator !=(Polynomial poly1, Polynomial poly2)
         {
             return !(poly1 == poly2);
         }
 
+        /// <summary>
+        /// Returns object hashcode
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
-            return coefficients.First().GetHashCode() + 331*12;
+            return elements?.GetHashCode() ?? 0;
         }
         #endregion
 
@@ -200,21 +268,25 @@ namespace MathPolynomial
         /// <returns>Value of polynomial</returns>
         public double GetValue(double x)
         {
-            if (double.IsNaN(x) || double.IsNegativeInfinity(x) || double.IsPositiveInfinity(x))
+            if (double.IsNaN(x) || double.IsInfinity(x))
                 throw new ArgumentException("Incorrect value found");
             double res = 0;
             int length = Degree;
             for(int i = 0; i <= length; ++i)
             {
-                res += Math.Pow(x, i) * coefficients[i];
+                res += Math.Pow(x, i) * elements[i];
             }
             return res;
         }
 
+        /// <summary>
+        /// Returns string representation of current polynomial
+        /// </summary>
+        /// <returns>String representation of polynomial</returns>
         public override string ToString()
         {
             int deg = Degree;
-            if (deg == 0) return coefficients[0].ToString(); 
+            if (deg == 0) return elements[0].ToString(CultureInfo.InvariantCulture); 
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i <= deg; ++i)
             {
@@ -224,6 +296,15 @@ namespace MathPolynomial
                 if (this[i] > 0) sb.Insert(0, '+');
             }
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Double type converter to polynomial
+        /// </summary>
+        /// <param name="number">Double number</param>
+        public static implicit operator Polynomial(double number)
+        {
+            return new Polynomial(number);
         }
         #endregion
     }
