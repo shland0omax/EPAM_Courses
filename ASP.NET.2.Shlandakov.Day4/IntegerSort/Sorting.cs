@@ -95,17 +95,11 @@ namespace IntegerSort
             for (int i = l, j = 0, k = m - l + 1; i <= r; ++i)
             {
                 if (j > m - l)
-                {
                     array[i] = temp[k++];
-                }
                 else if (k > r - l)
-                {
                     array[i] = temp[j++];
-                }
                 else
-                {
                     array[i] = comparer(temp[j], temp[k]) < 0 ? temp[j++] : temp[k++];
-                }
             }
         }
         #endregion

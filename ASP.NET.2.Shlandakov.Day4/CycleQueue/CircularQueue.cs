@@ -173,6 +173,7 @@ namespace CycleQueue
                 if (!isSynced) throw new InvalidOperationException("Trying enumerate changed version!");
                 yield return array[j];
             }
+            if (!isSynced) throw new InvalidOperationException("Trying enumerate changed version!");
         }
 
         /// <summary>

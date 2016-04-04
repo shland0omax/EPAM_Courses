@@ -38,7 +38,7 @@ namespace MathPolynomial
         /// Creates polynomial with coeffs from other polynomial
         /// </summary>
         /// <param name="polynomial">other polynomial</param>
-        public Polynomial(Polynomial polynomial) : this(polynomial.elements)
+        public Polynomial(Polynomial polynomial) : this(polynomial?.elements)
         {
         }
 
@@ -198,7 +198,7 @@ namespace MathPolynomial
         /// <returns>true - if equal, false otherwise</returns>
         public static bool Equals(Polynomial lp, Polynomial rp)
         {
-            return ((lp == rp) || ((lp != null) && (rp != null))) && lp.Equals(rp);
+            return ((lp == rp) || (((lp != null) && (rp != null))) && lp.Equals(rp));
         }
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace MathPolynomial
         /// <returns></returns>
         public static bool operator ==(Polynomial poly1, Polynomial poly2)
         {
-            if (ReferenceEquals(poly1, poly2)) return true;
+            if ((object)poly1 == (object)poly2) return true;
             return false;
         }
 

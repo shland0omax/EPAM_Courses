@@ -13,19 +13,31 @@ using System.Threading.Tasks;
 
 namespace EuclideanAlgoLL
 {
+    /// <summary>
+    /// Calculates GCD for int numbers with Euclidean or Binary methods
+    /// </summary>
     public static class GcdCalculator
     {
-
-        private delegate int GCDCalculator(int x, int y);
+        private delegate int GcdCalculate(int x, int y);
 
         #region Public Metods
-
-        public static int GCDEuclidean(int a, int b)
+        /// <summary>
+        /// Euclidean method of GCD calculation
+        /// </summary>
+        /// <param name="a">first number</param>
+        /// <param name="b">second number</param>
+        /// <returns>GCD</returns>
+        public static int GcdEuclidean(int a, int b)
         {
             return CalculateEuclidean(a, b);
         }
 
-        public static int GCDEuclidean(params int[] numbers)
+        /// <summary>
+        /// Euclidean method of GCD calculation for multiple numbers
+        /// </summary>
+        /// <param name="numbers">input numbers</param>
+        /// <returns>GCD</returns>
+        public static int GcdEuclidean(params int[] numbers)
         {
             if (numbers == null) throw new ArgumentNullException(nameof(numbers));
             if (numbers.Length == 0) throw new ArgumentException(nameof(numbers) + " is empty");
@@ -33,7 +45,14 @@ namespace EuclideanAlgoLL
             return CalculateMultiple(CalculateEuclidean, numbers);
         }
 
-        public static int GCDEuclidean(int a, int b, out long tics)
+        /// <summary>
+        /// Euclidean method of GCD calculation with time counting(in tics)
+        /// </summary>
+        /// <param name="a">first number</param>
+        /// <param name="b">second number</param>
+        /// <param name="tics">time</param>
+        /// <returns>GCD</returns>
+        public static int GcdEuclidean(int a, int b, out long tics)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -42,21 +61,38 @@ namespace EuclideanAlgoLL
             return res;
         }
 
-        public static int GCDEuclidean(out long tics, params int[] numbers)
+        /// <summary>
+        /// Euclidean method of GCD calculation for multiple numbers with time counting
+        /// </summary>
+        /// <param name="tics">time (in tics)</param>
+        /// <param name="numbers">numbers</param>
+        /// <returns>GCD</returns>
+        public static int GcdEuclidean(out long tics, params int[] numbers)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            int res = GCDEuclidean(numbers);
+            int res = GcdEuclidean(numbers);
             tics = sw.ElapsedTicks;
             return res;
         }
 
-        public static int GCDBinary(int a, int b)
+        /// <summary>
+        /// Binary method of GCD calculation
+        /// </summary>
+        /// <param name="a">first number</param>
+        /// <param name="b">second number</param>
+        /// <returns>GCD</returns>
+        public static int GcdBinary(int a, int b)
         {
             return CalculateBinary(a, b);
         }
 
-        public static int GCDBinary(params int[] numbers)
+        /// <summary>
+        /// Binary method of GCD calculation for multiple numbers
+        /// </summary>
+        /// <param name="numbers">input numbers</param>
+        /// <returns>GCD</returns>
+        public static int GcdBinary(params int[] numbers)
         {
             if (numbers == null) throw new ArgumentNullException(nameof(numbers));
             if (numbers.Length == 0) throw new ArgumentException(nameof(numbers) + " is empty");
@@ -64,7 +100,14 @@ namespace EuclideanAlgoLL
             return CalculateMultiple(CalculateBinary, numbers);
         }
 
-        public static int GCDBinary(int a, int b, out long tics)
+        /// <summary>
+        /// Binary method of GCD calculation with time counting(in tics)
+        /// </summary>
+        /// <param name="a">first number</param>
+        /// <param name="b">second number</param>
+        /// <param name="tics">time</param>
+        /// <returns>GCD</returns>
+        public static int GcdBinary(int a, int b, out long tics)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -73,11 +116,17 @@ namespace EuclideanAlgoLL
             return res;
         }
 
-        public static int GCDBinary(out long tics, params int[] numbers)
+        /// <summary>
+        /// Binary method of GCD calculation for multiple numbers with time counting
+        /// </summary>
+        /// <param name="tics">time (in tics)</param>
+        /// <param name="numbers">numbers</param>
+        /// <returns>GCD</returns>
+        public static int GcdBinary(out long tics, params int[] numbers)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            int res = GCDBinary(numbers);
+            int res = GcdBinary(numbers);
             tics = sw.ElapsedTicks;
             return res;
         }
@@ -85,12 +134,12 @@ namespace EuclideanAlgoLL
 
         #region Private methods
 
-        private static int CalculateMultiple(GCDCalculator calculator, int[] numbers)
+        private static int CalculateMultiple(GcdCalculate calculate, int[] numbers)
         {
             int result = numbers[0];
             for (int i = 1; i < numbers.Length; ++i)
             {
-                result = calculator(result, numbers[i]);
+                result = calculate(result, numbers[i]);
             }
             return result;
         }
