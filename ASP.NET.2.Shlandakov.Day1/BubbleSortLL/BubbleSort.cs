@@ -17,7 +17,7 @@ namespace BubbleSortLL
         /// <param name="comparer">IComparer object</param>
         public static void SortJaggedRows(int[][] array, IComparer<int[]> comparer)
         {
-            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
+            if (comparer == null) throw new ArgumentNullException(/*nameof(comparer)*/);
             SortJaggedRows(array, comparer.Compare);
         }
 
@@ -55,7 +55,6 @@ namespace BubbleSortLL
         /// <param name="comparer">Comparision object which compares array's rows</param>
         public static void SortJaggedRowsByDesc(int[][] array, IComparer<int[]> comparer)
         {
-            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
             SortJaggedRows(array, comparer);
             Reverse(array);
         }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EuclideanAlgoLL", "EuclideanAlgoLL\EuclideanAlgoLL.csproj", "{B787EC13-163B-476D-A0BF-3F4561997D02}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{98EF5A97-B7C8-42AD-AF0B-28544B4DD740}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EuclideanAlgoLLTests", "EuclideanAlgoLLTests\EuclideanAlgoLLTests.csproj", "{0CA25FE4-A7DA-40C1-82D6-46A4E94267F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EuclideanAlgoLL.NUnitTests", "EuclideanAlgoLL.NUnitTests\EuclideanAlgoLL.NUnitTests.csproj", "{672C5249-969E-42C5-94C8-5E8DDD2F7150}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +27,10 @@ Global
 		{0CA25FE4-A7DA-40C1-82D6-46A4E94267F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CA25FE4-A7DA-40C1-82D6-46A4E94267F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CA25FE4-A7DA-40C1-82D6-46A4E94267F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{672C5249-969E-42C5-94C8-5E8DDD2F7150}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{672C5249-969E-42C5-94C8-5E8DDD2F7150}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{672C5249-969E-42C5-94C8-5E8DDD2F7150}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{672C5249-969E-42C5-94C8-5E8DDD2F7150}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,5 +38,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{B787EC13-163B-476D-A0BF-3F4561997D02} = {16821E20-62E1-4987-ADB9-F7321C4CB10C}
 		{0CA25FE4-A7DA-40C1-82D6-46A4E94267F5} = {98EF5A97-B7C8-42AD-AF0B-28544B4DD740}
+		{672C5249-969E-42C5-94C8-5E8DDD2F7150} = {98EF5A97-B7C8-42AD-AF0B-28544B4DD740}
 	EndGlobalSection
 EndGlobal

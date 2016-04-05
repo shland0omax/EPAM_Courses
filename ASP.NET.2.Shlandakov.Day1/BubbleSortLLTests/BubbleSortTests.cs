@@ -76,5 +76,18 @@ namespace BubbleSortLLTests
             c = null;
             BubbleSort.SortJaggedRows(a, c);
         }
+
+        [TestMethod]
+        public void SortJaggedRowsByDesc_IComparer()
+        {
+            var a = new[]
+            {
+                new int[] {},
+                new[] {1, 5, 7, 4, 7, -12, 3}
+            };
+            var b = new[] { a[1], a[0] };
+            BubbleSort.SortJaggedRowsByDesc(a, new MinElementComparer());
+            CollectionAssert.AreEqual(a, b); 
+        }
     }
 }

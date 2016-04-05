@@ -5,12 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-//Дополнительно
-//В public-методах, как можно заметить, возможны повторения кода валидации.
-//Сделано это для того, чтобы не выполнять валидацию в private-методах, что, на мой взгляд, является плохим стилем
-//Делегат, добавленный в класс, достаточно универсальным и легко можнет быть применен в случае добавления новых
-//методов вычисления НОД
-
 namespace EuclideanAlgoLL
 {
     /// <summary>
@@ -134,6 +128,12 @@ namespace EuclideanAlgoLL
 
         #region Private methods
 
+        /// <summary>
+        /// Service method for calculating GCD for multiple numbrs
+        /// </summary>
+        /// <param name="calculate">Calculate method</param>
+        /// <param name="numbers">numbers to calculate GCD</param>
+        /// <returns></returns>
         private static int CalculateMultiple(GcdCalculate calculate, int[] numbers)
         {
             int result = numbers[0];
@@ -144,6 +144,12 @@ namespace EuclideanAlgoLL
             return result;
         }
 
+        /// <summary>
+        /// Euclidean method of GCD calculating
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         private static int CalculateEuclidean(int a, int b)
         {
             while (b != 0)
@@ -155,6 +161,12 @@ namespace EuclideanAlgoLL
             return Math.Abs(a);
         }
 
+        /// <summary>
+        /// Stein method of GCD calculating
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         private static int CalculateBinary(int a, int b)
         {
             int shift = 0;

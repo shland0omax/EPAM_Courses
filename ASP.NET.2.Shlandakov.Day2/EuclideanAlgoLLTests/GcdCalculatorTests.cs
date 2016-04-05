@@ -55,10 +55,10 @@ namespace EuclideanAlgoLLTests
         }
 
         [TestMethod]
-        public void GcdBinary_49andNeg14_7Expected()
+        public void GcdBinary_1024andNeg128_128Expected()
         {
             long a;
-            Assert.AreEqual(GcdCalculator.GcdBinary(49, 14, out a), 7);
+            Assert.AreEqual(GcdCalculator.GcdBinary(1024, -128, out a), 128);
         }
 
         [TestMethod]

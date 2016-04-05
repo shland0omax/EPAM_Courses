@@ -16,5 +16,20 @@ namespace IntegerSort.NUnitTests
             Sorting.Sort(array);
             return array;
         }
+
+        [TestCase(ExpectedException = typeof (ArgumentNullException))]
+        public void Sort_NullComparision_test()
+        {
+            Comparison<int> a = (x, y) => x > y ? 1 : x < y ? -1 : 0;
+            a = null;
+            Sorting.Sort(new []{4,5,6}, a);
+        }
+
+        [TestCase(ExpectedException = typeof(ArgumentNullException))]
+        public void Sort_NullIComparer_test()
+        {
+            IComparer<int> a = null;
+            Sorting.Sort(new[] { 4, 5, 6 }, a);
+        }
     }
 }

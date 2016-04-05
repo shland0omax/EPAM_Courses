@@ -306,6 +306,16 @@ namespace MathPolynomial
         {
             return new Polynomial(number);
         }
+
+        /// <summary>
+        /// Double array converter to Polynomial
+        /// </summary>
+        /// <param name="numbers"></param>
+        public static explicit operator Polynomial(double[] numbers)
+        {
+            if (numbers == null) return null;
+            return new Polynomial(numbers);
+        }
         #endregion
     }
 }

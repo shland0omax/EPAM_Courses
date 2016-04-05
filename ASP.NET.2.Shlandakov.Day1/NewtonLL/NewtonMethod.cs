@@ -17,13 +17,13 @@ namespace NewtonLL
         /// <returns></returns>
         public static double Execute(double a, int n, double eps = 0.00001)
         {
-            if (double.IsNaN(a))
+            if (double.IsNaN(a) || double.IsInfinity(a))
             {
-                throw new ArgumentException(nameof(a) + " is NaN!");
+                throw new ArgumentException(nameof(a));
             }
-            if (double.IsNaN(eps) || eps < 0)
+            if (double.IsNaN(eps) || eps <= 0 || double.IsNegativeInfinity(eps))
             {
-                throw new ArgumentException(nameof(eps) + "is NaN or <0!");
+                throw new ArgumentException(nameof(eps));
             }
             if (n == 0 || (a < 0 && ((n % 2) == 0)))
             {

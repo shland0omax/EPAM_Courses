@@ -39,15 +39,13 @@ namespace IntegerSort
         /// <param name="comparer">Comparison delegate</param>
         public static void Sort(int[] array, Comparison<int> comparer )
         {
-            if (array == null || array.Length == 0)
-            {
-                throw new ArgumentNullException(nameof(array) + " is null or empty");
-            }
+            if (array == null)
+                throw new ArgumentNullException(nameof(array) + " is null");
+            if (array.Length == 0)
+                throw new ArgumentException(nameof(array) + "is empty");
             if (array.Length == 1) return;
             if (comparer == null)
-            {
                 throw new ArgumentNullException(nameof(comparer) + " null comparer object recieved");
-            }
             MergeSort(array, comparer, 0, array.Length-1);
         }
         #endregion
